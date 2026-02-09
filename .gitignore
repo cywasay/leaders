@@ -1,0 +1,27 @@
+
+# Common
+.DS_Store
+Thumbs.db
+*.log
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
