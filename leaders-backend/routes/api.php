@@ -27,5 +27,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/admin/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'update']);
         Route::post('/admin/customers/{id}/create-account', [\App\Http\Controllers\CustomerController::class, 'createAccount']);
         Route::get('/admin/payments', [\App\Http\Controllers\PaymentController::class, 'index']);
+        Route::get('/admin/stats', [\App\Http\Controllers\CustomerController::class, 'getStats']);
     });
 });

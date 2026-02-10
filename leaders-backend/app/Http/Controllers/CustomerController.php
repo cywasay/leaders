@@ -266,4 +266,58 @@ class CustomerController extends Controller
             'password' => $plainPassword,
         ]);
     }
+
+    /**
+     * Get dashboard statistics
+     */
+    public function getStats(Request $request)
+    {
+        $totalCustomers = Customer::count();
+        $activeUsers = Customer::whereNotNull('user_id')->count();
+        $recentCustomers = Customer::with(['user' => function($query) {
+            $query->with('onboardings');
+        }])->latest()->limit(5)->get();
+
+        $totalRevenue = 0;
+        $successPayments = 0;
+        $stripeError = null;
+
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+            
+            // Sync if empty or if explicitly requested
+            if ($totalCustomers === 0 || $request->has('sync')) {
+                $this->syncCustomersFromStripe();
+                $totalCustomers = Customer::count();
+                $recentCustomers = Customer::with(['user' => function($query) {
+                    $query->with('onboardings');
+                }])->latest()->limit(5)->get();
+            }
+
+            // Fetch charges for calculations
+            $charges = Charge::all(['limit' => 100]);
+            
+            foreach ($charges->data as $charge) {
+                if ($charge->status === 'succeeded') {
+                    $totalRevenue += ($charge->amount / 100);
+                    $successPayments++;
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error("Dashboard Stats Stripe Error: " . $e->getMessage());
+            $stripeError = $e->getMessage();
+        }
+        
+        return response()->json([
+            'stats' => [
+                'total_customers' => $totalCustomers,
+                'active_users' => $activeUsers,
+                'total_revenue' => round($totalRevenue, 2),
+                'total_payments' => $successPayments,
+                'currency' => 'USD',
+                'recent_customers' => $recentCustomers,
+                'stripe_error' => $stripeError
+            ]
+        ]);
+    }
 }
