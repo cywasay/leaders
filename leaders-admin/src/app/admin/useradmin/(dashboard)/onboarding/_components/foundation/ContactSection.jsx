@@ -40,8 +40,10 @@ const ContactSection = ({
               <Phone size={14} className="text-[#3EC6EC]" /> Phone Number *
             </Label>
             <Input
-              value={formData.phone_number || ""}
-              onChange={(e) => updateFormData({ phone_number: e.target.value })}
+              value={formData.contact_phone || ""}
+              onChange={(e) =>
+                updateFormData({ contact_phone: e.target.value })
+              }
               placeholder="e.g. +1 (555) 000-0000"
               className="bg-[#111111] border-white/10 text-white placeholder:text-gray-400"
             />
@@ -91,7 +93,7 @@ const ContactSection = ({
       </div>
       <div className="bg-white/5 px-8 py-5 border-t border-white/5 flex justify-end">
         <Button
-          onClick={onSave}
+          onClick={() => onSave()}
           disabled={isSaving}
           className="bg-[#3EC6EC] hover:bg-[#2FB0D3] text-white font-bold px-8"
         >
