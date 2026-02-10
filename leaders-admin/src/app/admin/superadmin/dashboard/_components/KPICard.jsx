@@ -14,9 +14,15 @@ export default function KPICard({
   trendValue,
   loading,
   colorClass,
+  className,
 }) {
   return (
-    <Card className="bg-[#2D2D2D] h-[175px] border-white/5 overflow-hidden group">
+    <Card
+      className={cn(
+        "bg-[#2D2D2D] h-[175  px] border-white/5 overflow-hidden group",
+        className,
+      )}
+    >
       <CardContent>
         <div className="flex items-center justify-between">
           <div

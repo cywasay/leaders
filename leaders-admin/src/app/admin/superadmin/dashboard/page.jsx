@@ -29,7 +29,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="p-6 lg:p-10 space-y-8 animate-in fade-in duration-700">
+    <div className="p-6 lg:p-10 space-y-8">
       <DashboardHeader onSync={fetchStats} isSyncing={isSyncing} />
 
       <StatsGrid stats={stats} loading={loading} />
