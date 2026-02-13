@@ -202,16 +202,34 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
         
-        $customer->update($request->validate([
+        $data = $request->validate([
             'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:customers,email,' . $customer->id,
             'phone' => 'nullable|string|max:50',
             'category' => 'nullable|string|in:healthcare,tech,business,impact,speaker,research',
             'status' => 'nullable|string|in:pending,active,completed',
-        ]));
+        ]);
+
+        $customer->update($data);
+
+        // Sync with User account if it exists
+        if ($customer->user_id) {
+            $user = User::find($customer->user_id);
+            if ($user) {
+                $userUpdateData = [];
+                if (isset($data['name'])) $userUpdateData['name'] = $data['name'];
+                if (isset($data['email'])) $userUpdateData['email'] = $data['email'];
+                if (isset($data['category'])) $userUpdateData['category'] = $data['category'];
+                
+                if (!empty($userUpdateData)) {
+                    $user->update($userUpdateData);
+                }
+            }
+        }
 
         return response()->json([
             'message' => 'Customer updated successfully',
-            'customer' => $customer
+            'customer' => $customer->load('user')
         ]);
     }
 

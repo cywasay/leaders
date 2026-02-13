@@ -244,4 +244,19 @@ class OnboardingController extends Controller
             'onboarding' => $onboarding
         ]);
     }
+    /**
+     * Update an onboarding record (Admin/Superadmin).
+     */
+    public function update(Request $request, $id)
+    {
+        $onboarding = Onboarding::findOrFail($id);
+        
+        // Simple update for any field provided
+        $onboarding->update($request->all());
+
+        return response()->json([
+            'message' => 'Onboarding record updated successfully',
+            'onboarding' => $onboarding
+        ]);
+    }
 }
