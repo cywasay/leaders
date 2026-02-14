@@ -48,6 +48,7 @@ import {
   Hash,
   Tag,
   X,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -70,39 +71,79 @@ const PaymentsPage = () => {
     startingAfter: null,
     endingBefore: null,
   });
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState(null);
 
-  const fetchPayments = useCallback(async (params = {}) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const fetchPayments = useCallback(
+    async (params = {}, forceRefresh = false) => {
+      try {
+        if (forceRefresh) setIsSyncing(true);
+        setIsLoading(true);
+        setError(null);
 
-      const queryParams = new URLSearchParams();
-      queryParams.append("limit", 8);
-      if (params.starting_after)
-        queryParams.append("starting_after", params.starting_after);
-      if (params.ending_before)
-        queryParams.append("ending_before", params.ending_before);
+        const queryParams = new URLSearchParams();
+        queryParams.append("limit", 8);
+        if (params.startingAfter)
+          queryParams.append("starting_after", params.startingAfter);
+        if (params.endingBefore)
+          queryParams.append("ending_before", params.endingBefore);
 
-      const response = await apiRequest(
-        `/admin/payments?${queryParams.toString()}`,
-      );
+        const cacheKey = `payments_cache_${queryParams.toString()}`;
 
-      if (response.status === "success") {
-        setPayments(response.data);
-        setPaginationInfo({
-          hasMore: response.has_more,
-          firstId: response.first_id,
-          lastId: response.last_id,
-        });
-      } else {
-        setError("Failed to fetch payments");
+        // Check cache if not forcing refresh
+        if (!forceRefresh) {
+          const cached = sessionStorage.getItem(cacheKey);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            // Check if cache is older than 30 minutes (optional "session" expiration)
+            const isExpired = Date.now() - parsed.timestamp > 30 * 60 * 1000;
+            if (!isExpired) {
+              setPayments(parsed.data);
+              setPaginationInfo(parsed.pagination);
+              setLastSynced(new Date(parsed.timestamp));
+              setIsLoading(false);
+              return;
+            }
+          }
+        }
+
+        const response = await apiRequest(
+          `/admin/payments?${queryParams.toString()}`,
+        );
+
+        if (response.status === "success") {
+          const paginationData = {
+            hasMore: response.has_more,
+            firstId: response.first_id,
+            lastId: response.last_id,
+          };
+
+          setPayments(response.data);
+          setPaginationInfo(paginationData);
+
+          // Save to cache
+          const timestamp = Date.now();
+          sessionStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              data: response.data,
+              pagination: paginationData,
+              timestamp,
+            }),
+          );
+          setLastSynced(new Date(timestamp));
+        } else {
+          setError("Failed to fetch payments");
+        }
+      } catch (err) {
+        setError(err.message || "Something went wrong while fetching payments");
+      } finally {
+        setIsLoading(false);
+        setIsSyncing(false);
       }
-    } catch (err) {
-      setError(err.message || "Something went wrong while fetching payments");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     fetchPayments(currentCursor);
@@ -257,11 +298,30 @@ const PaymentsPage = () => {
           <h1 className="text-2xl font-bold font-outfit text-white">
             Payments
           </h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Track transactions, subscriptions, and billing history.
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-gray-400 text-sm">
+              Track transactions, subscriptions, and billing history.
+            </p>
+            {lastSynced && (
+              <span className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter bg-white/5 px-2 py-0.5 rounded-full">
+                Last Synced: {lastSynced.toLocaleTimeString()}
+              </span>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-3"></div>
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={() => fetchPayments(currentCursor, true)}
+            disabled={isLoading || isSyncing}
+            className="bg-[#3EC6EC]/10 hover:bg-[#3EC6EC]/20 text-[#3EC6EC] border border-[#3EC6EC]/20 font-bold rounded-xl h-11 px-6 flex items-center gap-2 transition-all active:scale-95"
+          >
+            <RefreshCw
+              size={18}
+              className={cn(isSyncing && "animate-spin-slow")}
+            />
+            {isSyncing ? "Syncing..." : "Sync from Stripe"}
+          </Button>
+        </div>
       </div>
 
       {/* Main Table Section */}
