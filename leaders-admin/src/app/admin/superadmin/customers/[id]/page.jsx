@@ -85,7 +85,7 @@ export default function CustomerDetailPage() {
       />
       <CredentialDisplay credentials={ui.credentials} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <CustomerInfoList customer={data.customer} />
+        <CustomerInfoList customer={data.customer} onUpdate={fetchData} />
         <div className="lg:col-span-2 h-full">
           <PurchaseHistory purchases={data.purchases} />
         </div>

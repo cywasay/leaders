@@ -198,7 +198,6 @@ class OnboardingController extends Controller
             'other_assets' => 'nullable|file|max:20480',
         ];
 
-        // Specific rules for some fields to match original validation
         $specificRules = [
             'practice_name' => 'nullable|string|max:255',
             'practitioner_name' => 'nullable|string|max:255',
@@ -209,13 +208,23 @@ class OnboardingController extends Controller
             'regions_served' => 'nullable|string|max:255',
             'timezone' => 'nullable|string|max:100',
             'patient_problem' => 'nullable|string|max:2000',
+            'specialties' => 'nullable', 
+            'practice_type' => 'nullable',
+            'services' => 'nullable',
+            'testimonials' => 'nullable',
+            'website_goals' => 'nullable',
+            'required_pages' => 'nullable',
+            'website_features' => 'nullable|string|max:2000',
+            'aesthetic_preference' => 'nullable|string|max:255',
             'brand_tone' => 'nullable|string|max:255',
             'liked_websites' => 'nullable|string|max:1000',
             'brand_colors' => 'nullable|string|max:255',
             'short_bio' => 'nullable|string|max:2000',
             'full_story' => 'nullable|string|max:5000',
+            'bio_snippet' => 'nullable|string|max:2000',
             'booking_url' => 'nullable|url|max:500',
             'patient_portal_url' => 'nullable|url|max:500',
+            'social_links' => 'nullable', 
             'hipaa_compliant' => 'nullable|boolean',
             'has_privacy_policy' => 'nullable|boolean',
             'has_terms' => 'nullable|boolean',
@@ -292,6 +301,21 @@ class OnboardingController extends Controller
 
         return response()->json([
             'message' => 'Progress saved successfully',
+            'onboarding' => $onboarding
+        ]);
+    }
+    /**
+     * Update an onboarding record (Admin/Superadmin).
+     */
+    public function update(Request $request, $id)
+    {
+        $onboarding = Onboarding::findOrFail($id);
+        
+        // Simple update for any field provided
+        $onboarding->update($request->all());
+
+        return response()->json([
+            'message' => 'Onboarding record updated successfully',
             'onboarding' => $onboarding
         ]);
     }
