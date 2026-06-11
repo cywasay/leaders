@@ -4,8 +4,13 @@ import { Section, Field } from "./Shared";
 
 const CustomerInfoList = ({ customer }) => {
   return (
-    <div className="space-y-6">
-      <Section title="Customer Information" icon={User}>
+    <div className="space-y-6 h-full flex flex-col">
+      <Section
+        title="Customer Information"
+        icon={User}
+        className="h-auto lg:h-[400px] flex flex-col mb-0"
+        contentClassName="flex-1 space-y-4"
+      >
         <Field label="Full Name" value={customer.name} />
         <Field label="Email Address" value={customer.email} />
         <Field label="Phone Number" value={customer.phone} />

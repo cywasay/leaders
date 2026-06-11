@@ -182,9 +182,24 @@ class OnboardingController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Dynamically get column names from schema to validate and save all fields
+        $columns = \Illuminate\Support\Facades\Schema::getColumnListing('onboardings');
+        
+        $rules = [
             'charge_id' => 'required|string',
             'category' => 'required|string',
+            'logo' => 'nullable|image|max:5120',
+            'headshot' => 'nullable|image|max:5120',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+            'clinic_images' => 'nullable|file|max:10240',
+            'lead_magnets' => 'nullable|file|max:10240',
+            'existing_content' => 'nullable|file|max:20480',
+            'media_logos' => 'nullable|file|max:5120',
+            'other_assets' => 'nullable|file|max:20480',
+        ];
+
+        // Specific rules for some fields to match original validation
+        $specificRules = [
             'practice_name' => 'nullable|string|max:255',
             'practitioner_name' => 'nullable|string|max:255',
             'primary_email' => 'nullable|email|max:255',
@@ -193,9 +208,7 @@ class OnboardingController extends Controller
             'address' => 'nullable|string|max:500',
             'regions_served' => 'nullable|string|max:255',
             'timezone' => 'nullable|string|max:100',
-            'ideal_audience' => 'nullable', 
             'patient_problem' => 'nullable|string|max:2000',
-            'specialties' => 'nullable', 
             'brand_tone' => 'nullable|string|max:255',
             'liked_websites' => 'nullable|string|max:1000',
             'brand_colors' => 'nullable|string|max:255',
@@ -203,22 +216,52 @@ class OnboardingController extends Controller
             'full_story' => 'nullable|string|max:5000',
             'booking_url' => 'nullable|url|max:500',
             'patient_portal_url' => 'nullable|url|max:500',
-            'social_links' => 'nullable', 
             'hipaa_compliant' => 'nullable|boolean',
+            'has_privacy_policy' => 'nullable|boolean',
+            'has_terms' => 'nullable|boolean',
             'current_step' => 'nullable|integer',
-            'logo' => 'nullable|image|max:5120',
-            'headshot' => 'nullable|image|max:5120',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
-        ]);
+        ];
+
+        foreach ($columns as $column) {
+            // Skip system and file path fields (since we map files to them manually)
+            if (in_array($column, [
+                'id', 'user_id', 'category', 'stripe_charge_id', 
+                'logo_path', 'headshot_path', 'cv_path', 'clinic_images_path', 
+                'lead_magnets_path', 'existing_content_path', 'media_logos_path', 'other_assets_path', 
+                'created_at', 'updated_at'
+            ])) {
+                continue;
+            }
+            if (array_key_exists($column, $specificRules)) {
+                $rules[$column] = $specificRules[$column];
+            } else {
+                $rules[$column] = 'nullable';
+            }
+        }
+
+        $validated = $request->validate($rules);
 
         $data = $validated;
-        unset($data['logo'], $data['headshot'], $data['cv'], $data['charge_id']);
+        unset(
+            $data['logo'], $data['headshot'], $data['cv'], 
+            $data['clinic_images'], $data['lead_magnets'], $data['existing_content'], 
+            $data['media_logos'], $data['other_assets'], $data['charge_id']
+        );
         
         $chargeId = $request->input('charge_id');
         $category = $request->input('category');
 
         // Handle file uploads
-        $fileFields = ['logo' => 'logo_path', 'headshot' => 'headshot_path', 'cv' => 'cv_path'];
+        $fileFields = [
+            'logo' => 'logo_path', 
+            'headshot' => 'headshot_path', 
+            'cv' => 'cv_path',
+            'clinic_images' => 'clinic_images_path',
+            'lead_magnets' => 'lead_magnets_path',
+            'existing_content' => 'existing_content_path',
+            'media_logos' => 'media_logos_path',
+            'other_assets' => 'other_assets_path'
+        ];
         foreach ($fileFields as $fileKey => $dbField) {
             if ($request->hasFile($fileKey)) {
                 $data[$dbField] = $request->file($fileKey)->store($fileKey, 'public');
@@ -231,6 +274,14 @@ class OnboardingController extends Controller
             if (isset($data[$field]) && is_string($data[$field])) {
                 $decoded = json_decode($data[$field], true);
                 if (json_last_error() === JSON_ERROR_NONE) $data[$field] = $decoded;
+            }
+        }
+
+        // Convert string booleans ("true"/"false") received from FormData to actual booleans
+        $booleanFields = ['hipaa_compliant', 'has_privacy_policy', 'has_terms'];
+        foreach ($booleanFields as $field) {
+            if (isset($data[$field])) {
+                $data[$field] = filter_var($data[$field], FILTER_VALIDATE_BOOLEAN);
             }
         }
 

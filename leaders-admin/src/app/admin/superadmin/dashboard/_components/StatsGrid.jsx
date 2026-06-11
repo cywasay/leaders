@@ -18,7 +18,15 @@ export default function StatsGrid({ stats, loading }) {
       />
       <KPICard
         title="Total Revenue"
-        value={`$${stats?.total_revenue?.toLocaleString() || "0"}`}
+        value={
+          stats?.total_revenue !== undefined
+            ? new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+              }).format(stats.total_revenue)
+            : "$0.00"
+        }
         icon={TrendingUp}
         trend="up"
         trendValue="8.4%"

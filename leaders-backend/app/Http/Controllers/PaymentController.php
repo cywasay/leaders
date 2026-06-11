@@ -92,7 +92,7 @@ class PaymentController extends Controller
                         'postal_code' => $billing->address->postal_code ?? null,
                         'country' => $billing->address->country ?? null,
                     ],
-                    'date' => date('M d, Y, h:i A', $charge->created),
+                    'date' => gmdate('Y-m-d\TH:i:s\Z', $charge->created),
                     'created_timestamp' => $charge->created,
                     'method' => $charge->payment_method_details->type ?? 'card',
                     'card_brand' => $card->brand ?? null,

@@ -86,13 +86,15 @@ export default function CustomerDetailPage() {
       <CredentialDisplay credentials={ui.credentials} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <CustomerInfoList customer={data.customer} />
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 h-full">
           <PurchaseHistory purchases={data.purchases} />
-          <OnboardingAccordions
-            customer={data.customer}
-            purchases={data.purchases}
-          />
         </div>
+      </div>
+      <div className="w-full">
+        <OnboardingAccordions
+          customer={data.customer}
+          purchases={data.purchases}
+        />
       </div>
     </div>
   );

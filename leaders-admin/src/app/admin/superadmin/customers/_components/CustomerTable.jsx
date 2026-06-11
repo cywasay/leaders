@@ -57,7 +57,7 @@ const CustomerTable = ({ customers }) => {
     <Table>
       <TableHeader className="bg-white/5">
         <TableRow className="border-white/5">
-          <TableHead className="w-[300px] text-gray-400">Customer</TableHead>
+          <TableHead className="w-[300px] text-gray-400 pl-6">Customer</TableHead>
           <TableHead className="text-gray-400">Category</TableHead>
           <TableHead className="text-gray-400">Status</TableHead>
           <TableHead className="text-gray-400">Added</TableHead>
@@ -73,7 +73,7 @@ const CustomerTable = ({ customers }) => {
               key={customer.id}
               className="border-white/5 hover:bg-white/5 group"
             >
-              <TableCell className="py-4">
+              <TableCell className="py-2.5 pl-6">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-white/10">
                     <AvatarFallback className="bg-[#3EC6EC]/10 text-[#3EC6EC] font-bold text-xs uppercase">
@@ -93,12 +93,12 @@ const CustomerTable = ({ customers }) => {
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-2.5">
                 <Badge className="rounded-full px-2.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] font-bold uppercase">
                   {customer.category || "—"}
                 </Badge>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-2.5">
                 <Badge
                   className={cn(
                     "rounded-full px-2.5 text-[10px] font-bold uppercase",
@@ -108,10 +108,10 @@ const CustomerTable = ({ customers }) => {
                   {getCustomerStatus(customer)}
                 </Badge>
               </TableCell>
-              <TableCell className="text-sm text-gray-400 font-medium">
+              <TableCell className="text-sm text-gray-400 font-medium py-2.5">
                 {formatDate(customer.created_at)}
               </TableCell>
-              <TableCell className="text-right pr-6">
+              <TableCell className="text-right pr-6 py-2.5">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button

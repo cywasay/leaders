@@ -4,9 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Section } from "./Shared";
 
-const PurchaseHistory = ({ purchases }) => {
+const PurchaseHistory = ({ purchases, className = "" }) => {
   return (
-    <Section title="Purchase History" icon={ShoppingBag}>
+    <Section
+      title="Purchase History"
+      icon={ShoppingBag}
+      className={cn("h-[400px] flex flex-col mb-0", className)}
+      contentClassName="flex-1 overflow-y-auto min-h-0 pr-1"
+    >
       {purchases.length > 0 ? (
         <div className="grid grid-cols-1 gap-4">
           {purchases.map((purchase) => (
@@ -33,7 +38,7 @@ const PurchaseHistory = ({ purchases }) => {
                 <div className="flex items-center gap-2 text-[10px] text-gray-500">
                   <span className="font-mono">#{purchase.id.slice(-8)}</span>
                   <span>•</span>
-                  <span>{purchase.date}</span>
+                  <span>{purchase.date ? new Date(purchase.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"}</span>
                 </div>
               </div>
               <div className="p-0">

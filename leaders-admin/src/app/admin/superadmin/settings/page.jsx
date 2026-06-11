@@ -180,7 +180,7 @@ export default function SettingsPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#1A1A1A] border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
                     placeholder="John Doe"
                     required
                   />
@@ -201,7 +201,7 @@ export default function SettingsPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#1A1A1A] border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
                     placeholder="admin@leaders.com"
                     required
                   />
@@ -236,7 +236,7 @@ export default function SettingsPage() {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#2D2D2D] border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#1A1A1A] border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
                     placeholder="••••••••"
                   />
                 </div>
@@ -256,7 +256,7 @@ export default function SettingsPage() {
                     name="password_confirmation"
                     value={formData.password_confirmation}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#2D2D2D] border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#1A1A1A] border border-white/10 rounded-xl focus:ring-2 focus:ring-[#3EC6EC]/50 focus:border-[#3EC6EC] transition-all outline-none text-white placeholder:text-gray-600"
                     placeholder="••••••••"
                   />
                 </div>
@@ -276,7 +276,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="px-8 py-2.5 bg-[#FF7300] hover:bg-[#E66700] text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-500/20 flex items-center gap-2 disabled:opacity-70 disabled:shadow-none"
+              className="px-8 py-2.5 bg-[#3EC6EC] hover:bg-[#2FB0D3] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#3EC6EC]/20 flex items-center gap-2 disabled:opacity-70 disabled:shadow-none"
             >
               {isSaving ? (
                 <>

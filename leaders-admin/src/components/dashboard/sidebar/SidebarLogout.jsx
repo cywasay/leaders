@@ -1,20 +1,19 @@
 "use client";
 
+import React, { useState } from "react";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import LogoutModal from "../LogoutModal";
 
 const SidebarLogout = ({ isCollapsed }) => {
   const { logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="px-3 mt-auto pb-6 pt-4 border-t border-white/5">
       <button
-        onClick={handleLogout}
+        onClick={() => setIsModalOpen(true)}
         className={cn(
           "flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-gray-500 hover:bg-[#3EC6EC]/10 hover:text-[#3EC6EC] transition-all duration-200 group",
           isCollapsed ? "justify-center" : "pr-4",
@@ -23,6 +22,12 @@ const SidebarLogout = ({ isCollapsed }) => {
         <LogOut size={20} className="shrink-0 group-hover:text-[#3EC6EC]" />
         {!isCollapsed && <span className="font-medium">Logout</span>}
       </button>
+
+      <LogoutModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={logout}
+      />
     </div>
   );
 };

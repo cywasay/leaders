@@ -14,6 +14,21 @@ const ContactSection = ({
   const IconMap = { Mail, Phone, MapPin, Globe, Clock };
   const AddressIcon = IconMap[def.addressIcon] || MapPin;
 
+  const getAddressPlaceholder = () => {
+    if (def.addressPlaceholder) return def.addressPlaceholder;
+    const label = (def.addressLabel || "").toLowerCase();
+    if (label.includes("industry") || label.includes("domain")) {
+      return "e.g. SaaS, AI, Web3, FinTech";
+    }
+    if (label.includes("market") || label.includes("region") || label.includes("geographic") || label.includes("reach")) {
+      return "e.g. Global, North America, Europe";
+    }
+    if (label.includes("city") || label.includes("location") || label.includes("institution")) {
+      return "e.g. Toronto, Canada or Harvard University";
+    }
+    return "Street, City, State, Zip";
+  };
+
   return (
     <section className="bg-[#2D2D2D] border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
       <div className="p-5 sm:p-8 space-y-6">
@@ -55,11 +70,11 @@ const ContactSection = ({
             {def.addressLabel}
           </Label>
           <Input
-            value={formData.practice_address || ""}
+            value={formData.address || ""}
             onChange={(e) =>
-              updateFormData({ practice_address: e.target.value })
+              updateFormData({ address: e.target.value })
             }
-            placeholder="Street, City, State, Zip"
+            placeholder={getAddressPlaceholder()}
             className="bg-[#111111] border-white/10 text-white placeholder:text-gray-400"
           />
         </div>
@@ -70,11 +85,11 @@ const ContactSection = ({
               Served
             </Label>
             <Input
-              value={formData.states_served || ""}
+              value={formData.regions_served || ""}
               onChange={(e) =>
-                updateFormData({ states_served: e.target.value })
+                updateFormData({ regions_served: e.target.value })
               }
-              placeholder="e.g. California, New York"
+              placeholder="e.g. California, New York, Global"
               className="bg-[#111111] border-white/10 text-white placeholder:text-gray-400"
             />
           </div>

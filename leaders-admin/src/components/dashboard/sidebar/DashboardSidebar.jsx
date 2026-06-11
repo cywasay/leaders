@@ -28,16 +28,19 @@ const DashboardSidebar = () => {
         )}
       >
         <div className="relative w-full h-full flex items-center justify-center">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={160}
-            height={60}
-            className={cn(
-              "object-contain transition-all duration-300",
-              isCollapsed ? "w-10 h-10" : "w-40 h-auto",
-            )}
-          />
+          {isCollapsed ? (
+            <div className="w-12 h-12 rounded-xl bg-[#3EC6EC]/10 border border-[#3EC6EC]/25 flex items-center justify-center text-[#3EC6EC] font-extrabold text-2xl font-outfit shadow-sm shadow-[#3EC6EC]/5 animate-in fade-in zoom-in-95 duration-200">
+              G
+            </div>
+          ) : (
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={160}
+              height={60}
+              className="object-contain w-40 h-auto transition-all duration-300"
+            />
+          )}
         </div>
 
         <button

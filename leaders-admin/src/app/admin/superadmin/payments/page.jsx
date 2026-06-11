@@ -53,6 +53,34 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiRequest } from "@/lib/api";
 
+const DetailRow = ({ icon: Icon, label, value, className = "" }) => {
+  if (!value && value !== 0) return null;
+  return (
+    <div className={cn("flex items-start gap-3 py-2", className)}>
+      <Icon size={16} className="text-gray-400 mt-0.5 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+          {label}
+        </p>
+        <p className="text-sm text-gray-900 font-medium break-all">{value}</p>
+      </div>
+    </div>
+  );
+};
+
+const formatPaymentDate = (dateString, withTime = false) => {
+  if (!dateString) return "N/A";
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return dateString;
+  const options = { month: "short", day: "numeric", year: "numeric" };
+  if (withTime) {
+    options.hour = "numeric";
+    options.minute = "2-digit";
+    options.hour12 = true;
+  }
+  return d.toLocaleDateString("en-US", options);
+};
+
 const PaymentsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [payments, setPayments] = useState([]);
@@ -70,6 +98,8 @@ const PaymentsPage = () => {
     startingAfter: null,
     endingBefore: null,
   });
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [brandFilter, setBrandFilter] = useState("all");
 
   const fetchPayments = useCallback(async (params = {}) => {
     try {
@@ -137,16 +167,30 @@ const PaymentsPage = () => {
     }
   };
 
-  const filteredPayments = (payments || []).filter(
-    (payment) =>
+  const filteredPayments = (payments || []).filter((payment) => {
+    // 1. Search term
+    const matchesSearch =
       (payment.customer?.name || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       (payment.customer?.email || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      payment.id.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+      payment.id.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // 2. Status
+    const matchesStatus =
+      statusFilter === "all" ||
+      payment.status?.toLowerCase() === statusFilter.toLowerCase();
+
+    // 3. Card Brand
+    const cardBrand = (payment.card_brand || payment.method || "").toLowerCase();
+    const matchesBrand =
+      brandFilter === "all" ||
+      cardBrand.includes(brandFilter.toLowerCase());
+
+    return matchesSearch && matchesStatus && matchesBrand;
+  });
 
   const getStatusIcon = (status) => {
     const s = status?.toLowerCase();
@@ -169,20 +213,6 @@ const PaymentsPage = () => {
     setIsDetailsOpen(true);
   };
 
-  const DetailRow = ({ icon: Icon, label, value, className = "" }) => {
-    if (!value && value !== 0) return null;
-    return (
-      <div className={cn("flex items-start gap-3 py-2", className)}>
-        <Icon size={16} className="text-gray-400 mt-0.5 shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
-            {label}
-          </p>
-          <p className="text-sm text-gray-900 font-medium break-all">{value}</p>
-        </div>
-      </div>
-    );
-  };
 
   if (isLoading) {
     return (
@@ -280,13 +310,76 @@ const PaymentsPage = () => {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              className="border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 flex items-center gap-2 rounded-xl h-11"
-            >
-              <Filter size={18} />
-              Filters
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 flex items-center gap-2 rounded-xl h-11 transition-all select-none",
+                    (statusFilter !== "all" || brandFilter !== "all") && "border-[#3EC6EC] text-[#3EC6EC] bg-[#3EC6EC]/5 hover:bg-[#3EC6EC]/10"
+                  )}
+                >
+                  <Filter size={18} />
+                  <span>Filters</span>
+                  {(statusFilter !== "all" || brandFilter !== "all") && (
+                    <span className="w-1.5 h-1.5 bg-[#3EC6EC] rounded-full"></span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-[180px] border-white/10 bg-[#2D2D2D] text-gray-300"
+              >
+                <DropdownMenuLabel className="text-xs text-gray-400">
+                  Status
+                </DropdownMenuLabel>
+                {["all", "succeeded", "failed", "pending"].map((status) => (
+                  <DropdownMenuItem
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={cn(
+                      "cursor-pointer text-xs font-semibold capitalize",
+                      statusFilter === status ? "text-[#3EC6EC] bg-white/5 font-bold" : "text-gray-300 hover:bg-white/5"
+                    )}
+                  >
+                    {status === "all" ? "All Statuses" : status}
+                  </DropdownMenuItem>
+                ))}
+                
+                <DropdownMenuSeparator className="bg-white/5" />
+                
+                <DropdownMenuLabel className="text-xs text-gray-400">
+                  Card Brand
+                </DropdownMenuLabel>
+                {["all", "visa", "mastercard"].map((brand) => (
+                  <DropdownMenuItem
+                    key={brand}
+                    onClick={() => setBrandFilter(brand)}
+                    className={cn(
+                      "cursor-pointer text-xs font-semibold capitalize",
+                      brandFilter === brand ? "text-[#3EC6EC] bg-white/5 font-bold" : "text-gray-300 hover:bg-white/5"
+                    )}
+                  >
+                    {brand === "all" ? "All Brands" : brand}
+                  </DropdownMenuItem>
+                ))}
+
+                {(statusFilter !== "all" || brandFilter !== "all") && (
+                  <>
+                    <DropdownMenuSeparator className="bg-white/5" />
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setStatusFilter("all");
+                        setBrandFilter("all");
+                      }}
+                      className="cursor-pointer text-xs font-bold text-rose-400 hover:bg-rose-500/10 justify-center text-center"
+                    >
+                      Clear Filters
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -392,7 +485,7 @@ const PaymentsPage = () => {
                   </TableCell>
                   <TableCell className="py-3 text-right pr-6">
                     <span className="text-xs text-gray-500 font-medium font-outfit">
-                      {payment.date}
+                      {formatPaymentDate(payment.date)}
                     </span>
                   </TableCell>
                 </TableRow>
@@ -542,7 +635,7 @@ const PaymentsPage = () => {
                   <DetailRow
                     icon={Calendar}
                     label="Date"
-                    value={selectedPayment.date}
+                    value={formatPaymentDate(selectedPayment.date, true)}
                   />
                   <DetailRow
                     icon={FileText}

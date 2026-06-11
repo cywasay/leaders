@@ -6,10 +6,19 @@ $kernel->bootstrap();
 
 $email = 'gz2750114@gmail.com';
 $customer = \App\Models\Customer::where('email', $email)->first();
+$user = \App\Models\User::where('email', $email)->first();
 
 if ($customer) {
-    echo "FOUND: ID " . $customer->id . " Name: " . $customer->name;
+    echo "CUSTOMER FOUND:\n";
+    print_r($customer->toArray());
 } else {
-    echo "NOT FOUND in customers table";
+    echo "CUSTOMER NOT FOUND in customers table\n";
+}
+
+if ($user) {
+    echo "USER FOUND:\n";
+    print_r($user->toArray());
+} else {
+    echo "USER NOT FOUND in users table\n";
 }
 echo "\n";

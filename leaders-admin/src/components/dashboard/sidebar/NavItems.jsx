@@ -53,11 +53,6 @@ const NavItems = ({ isCollapsed }) => {
           icon: CreditCard,
           href: "/admin/superadmin/payments",
         },
-        {
-          label: "Settings",
-          icon: Settings,
-          href: "/admin/superadmin/settings",
-        },
       ];
     }
 

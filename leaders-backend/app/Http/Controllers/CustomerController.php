@@ -179,7 +179,7 @@ class CustomerController extends Controller
                     'amount' => $charge->amount / 100,
                     'currency' => strtoupper($charge->currency),
                     'status' => $charge->status,
-                    'date' => date('M d, Y', $charge->created),
+                    'date' => gmdate('Y-m-d\TH:i:s\Z', $charge->created),
                     'items' => $items,
                     'receipt_url' => $charge->receipt_url,
                 ];

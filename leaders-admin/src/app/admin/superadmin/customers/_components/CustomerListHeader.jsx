@@ -9,7 +9,7 @@ const CustomerListHeader = ({ isSyncing, onSync }) => {
       <div>
         <h1 className="text-2xl font-bold font-outfit text-white">Customers</h1>
         <p className="text-gray-400 text-sm mt-1">
-          View and manage healthcare practitioners.
+          View and manage all customer accounts.
         </p>
       </div>
       <div className="flex items-center gap-3">

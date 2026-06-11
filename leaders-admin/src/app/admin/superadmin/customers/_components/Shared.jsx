@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 
-export const Section = ({ title, icon: Icon, children, className = "" }) => (
+export const Section = ({ title, icon: Icon, children, className = "", contentClassName = "" }) => (
   <div
     className={`bg-[#2D2D2D] border border-white/5 rounded-2xl overflow-hidden shadow-xl mb-6 ${className}`}
   >
@@ -11,7 +11,7 @@ export const Section = ({ title, icon: Icon, children, className = "" }) => (
       </div>
       <h3 className="font-bold text-white max-w-[calc(100%-3rem)]">{title}</h3>
     </div>
-    <div className="p-5 space-y-4">{children}</div>
+    <div className={`p-5 space-y-4 ${contentClassName}`}>{children}</div>
   </div>
 );
 

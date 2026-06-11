@@ -188,9 +188,9 @@ export default function SettingsPage() {
                   This will be displayed on your profile and dashboard.
                 </p>
                 {formData.avatar && (
-                  <Badge className="bg-[#3EC6EC] text-white border-none font-bold text-[10px] mt-2 px-3 py-1 uppercase">
+                  <span className="inline-block px-2 py-1 bg-[#3EC6EC]/10 text-[#3EC6EC] text-[10px] font-bold rounded mt-2 uppercase tracking-wider">
                     Ready to Sync
-                  </Badge>
+                  </span>
                 )}
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function SettingsPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full pl-11 pr-5 h-12 sm:h-14 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-sm sm:text-base text-white font-semibold"
+                    className="w-full pl-11 pr-5 h-12 sm:h-14 bg-[#1A1A1A] border border-white/10 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-sm sm:text-base text-white font-semibold"
                     placeholder="Enter your name"
                     required
                   />
@@ -231,7 +231,7 @@ export default function SettingsPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full pl-12 pr-6 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-white font-semibold"
+                    className="w-full pl-12 pr-6 h-14 bg-[#1A1A1A] border border-white/10 rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-white font-semibold"
                     placeholder="email@example.com"
                     required
                   />
@@ -270,7 +270,7 @@ export default function SettingsPage() {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="w-full pl-12 pr-6 h-14 bg-[#2D2D2D] border border-white/10 rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-white font-semibold"
+                    className="w-full pl-12 pr-6 h-14 bg-[#1A1A1A] border border-white/10 rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-white font-semibold"
                     placeholder="••••••••"
                   />
                 </div>
@@ -290,7 +290,7 @@ export default function SettingsPage() {
                     name="password_confirmation"
                     value={formData.password_confirmation}
                     onChange={handleInputChange}
-                    className="w-full pl-12 pr-6 h-14 bg-[#2D2D2D] border border-white/10 rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-white font-semibold"
+                    className="w-full pl-12 pr-6 h-14 bg-[#1A1A1A] border border-white/10 rounded-2xl focus:ring-4 focus:ring-[#3EC6EC]/5 focus:border-[#3EC6EC] transition-all outline-none text-white font-semibold"
                     placeholder="••••••••"
                   />
                 </div>

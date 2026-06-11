@@ -2,7 +2,6 @@
 
 import React from "react";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -13,57 +12,51 @@ export default function KPICard({
   trend,
   trendValue,
   loading,
-  colorClass,
   className,
 }) {
   return (
-    <Card
+    <div
       className={cn(
-        "bg-[#2D2D2D] h-[175  px] border-white/5 overflow-hidden group",
-        className,
+        "bg-[#222222] border border-white/5 rounded-xl p-5 flex flex-col justify-between h-[108px] transition-all duration-200 hover:border-white/10 shadow-sm",
+        className
       )}
     >
-      <CardContent>
-        <div className="flex items-center justify-between">
+      {/* Top Row: Title & Icon */}
+      <div className="flex items-center justify-between w-full">
+        <span className="text-[13px] font-medium text-gray-400">
+          {title}
+        </span>
+        <div className="text-gray-400">
+          <Icon size={16} strokeWidth={1.5} />
+        </div>
+      </div>
+
+      {/* Bottom Row: Value & Trend */}
+      <div className="flex items-baseline justify-between w-full">
+        {loading ? (
+          <Skeleton className="h-7 w-20 bg-white/5 rounded" />
+        ) : (
+          <h3 className="text-xl font-semibold text-white tracking-tight font-outfit">
+            {value}
+          </h3>
+        )}
+        
+        {trend && (
           <div
             className={cn(
-              "p-3 rounded-xl bg-white/5 text-gray-400 group-hover:scale-110 transition-transform duration-300",
-              colorClass,
+              "flex items-center gap-0.5 text-xs font-medium",
+              trend === "up" ? "text-emerald-400" : "text-red-400"
             )}
           >
-            <Icon size={24} />
+            {trend === "up" ? (
+              <ArrowUpRight size={13} strokeWidth={2} />
+            ) : (
+              <ArrowDownRight size={13} strokeWidth={2} />
+            )}
+            <span>{trendValue}</span>
           </div>
-          {trend && (
-            <div
-              className={cn(
-                "flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full",
-                trend === "up"
-                  ? "bg-emerald-500/10 text-emerald-400"
-                  : "bg-red-500/10 text-red-400",
-              )}
-            >
-              {trend === "up" ? (
-                <ArrowUpRight size={14} />
-              ) : (
-                <ArrowDownRight size={14} />
-              )}
-              {trendValue}
-            </div>
-          )}
-        </div>
-        <div className="mt-4">
-          {loading ? (
-            <Skeleton className="h-8 w-24 bg-white/5" />
-          ) : (
-            <h3 className="text-3xl font-bold text-white tracking-tight">
-              {value}
-            </h3>
-          )}
-          <p className="text-sm font-medium text-gray-500 mt-1 uppercase tracking-wider">
-            {title}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+        )}
+      </div>
+    </div>
   );
 }
