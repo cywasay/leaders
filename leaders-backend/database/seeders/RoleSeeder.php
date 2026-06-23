@@ -19,20 +19,29 @@ class RoleSeeder extends Seeder
         User::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
+        // Ensure roles exist in Spatie permission table
+        \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'superadmin', 'guard_name' => 'web']);
+        \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+
         // Create Superadmin
-        User::create([
+        $newPassword = 'Admin123@globa!!';
+        $hashedPassword = Hash::make($newPassword);
+        $this->command->info("Superadmin password hash: " . $hashedPassword);
+        $superadmin = User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@leaders.com',
-            'password' => Hash::make('password'),
+            'password' => $hashedPassword,
             'role' => 'superadmin',
         ]);
+        $superadmin->assignRole('superadmin');
 
         // Create User Admin
-        User::create([
+        $useradmin = User::create([
             'name' => 'User Admin',
             'email' => 'useradmin@leaders.com',
             'password' => Hash::make('password'),
             'role' => 'user',
         ]);
+        $useradmin->assignRole('user');
     }
 }

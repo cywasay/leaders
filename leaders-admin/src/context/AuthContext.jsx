@@ -31,11 +31,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, recaptchaToken = null) => {
     try {
       const data = await apiRequest("/login", {
         method: "POST",
-        body: { email, password },
+        body: { email, password, recaptcha_token: recaptchaToken },
       });
 
       // Based on USER request: returns { user: {...}, token: "..." }

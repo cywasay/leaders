@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -19,17 +20,40 @@ const AdminLoginPage = () => {
     setError("");
     setIsSubmitting(true);
 
-    const result = await login(email, password);
+    try {
+      const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Le2Q0UsAAAAAA9N6w-vcLA0CWLMi-ifFr6Iukt5";
+      
+      if (!window.grecaptcha) {
+        throw new Error("reCAPTCHA is still loading. Please wait a moment and try again.");
+      }
 
-    if (!result.success) {
-      setError(result.message);
+      const token = await new Promise((resolve, reject) => {
+        window.grecaptcha.ready(() => {
+          window.grecaptcha.execute(siteKey, { action: "login" })
+            .then(resolve)
+            .catch(reject);
+        });
+      });
+
+      const result = await login(email, password, token);
+
+      if (!result.success) {
+        setError(result.message);
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      setError(err.message || "reCAPTCHA verification failed.");
       setIsSubmitting(false);
     }
-    // Success is handled by redirect in AuthContext
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[327px] gap-8 mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <>
+      <Script
+        src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Le2Q0UsAAAAAA9N6w-vcLA0CWLMi-ifFr6Iukt5"}`}
+        strategy="afterInteractive"
+      />
+      <div className="flex flex-col w-full max-w-[327px] gap-8 mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Top section: Heading + Email + Password + Forgot Password */}
       <form
         onSubmit={handleSubmit}
@@ -112,6 +136,7 @@ const AdminLoginPage = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 

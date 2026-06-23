@@ -5,17 +5,43 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+            'recaptcha_token' => ['required', 'string'],
         ]);
 
+        // Verify reCAPTCHA token
+        $recaptchaToken = $request->input('recaptcha_token');
+        $secretKey = config('services.recaptcha.secret');
 
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => $secretKey,
+            'response' => $recaptchaToken,
+            'remoteip' => $request->ip(),
+        ]);
+
+        // Log the verify response for diagnostics
+        \Illuminate\Support\Facades\Log::info('reCAPTCHA siteverify response:', [
+            'success' => $response->json('success'),
+            'score' => $response->json('score'),
+            'action' => $response->json('action'),
+            'error-codes' => $response->json('error-codes'),
+        ]);
+
+        if (!$response->successful() || !$response->json('success') || $response->json('score') < 0.5) {
+            return response()->json([
+                'message' => 'reCAPTCHA verification failed. Please try again.',
+            ], 422);
+        }
+
+        $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             /** @var \App\Models\User $user */
